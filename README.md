@@ -13,5 +13,5 @@ Open `spriter.py` and set <i>id</i> to your user id, and <i>key</i> to your Robl
 
 # How to use
 Run `convert.sh`<br/>
-Args: video (must be in current dir), segment length, fps, video width (resolution)<br/>
+Args: video (must be in current dir), segment length (in seconds), fps, video width (resolution)<br/>
 Outputs: a lua file with a table of all the spritesheets, with columns, rows, and frames
