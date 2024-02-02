@@ -12,7 +12,8 @@ mkdir "out/$out/sheets"
 cd out/$out/segs;
 
 for i in *.mp4; do
-    ffmpeg -i "$i" -pix_fmt rgb8 "../gifs/${i%.*}.gif";
+    gifski --fps $3 --width $4 -o "../gifs/${i%.*}.gif" "$i"
+    # ffmpeg -i "$i" -pix_fmt rgb8 "../gifs/${i%.*}.gif";
 done
 
 cd ../../../;
