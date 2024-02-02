@@ -3,6 +3,13 @@ This converts a video to multiple spritesheets, and uploads them all to Roblox.
 
 # Setup
 Open `spriter.py` and set <i>id</i> to your user id, and <i>key</i> to your Roblox API key
+This requires rblx-open-cloud and Pillow to work, install them with this command:
+```py
+pip3 install rblx-open-cloud Pillow
+```
+
+It also requires gifski, for high quality gifs
+Download it [here](https://gif.ski/)
 
 # How to get an API key
 1. Go to [Creator Hub >> Open Cloud >> API keys](https://create.roblox.com/dashboard/credentials?activeTab=ApiKeysTab)
