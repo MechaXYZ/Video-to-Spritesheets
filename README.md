@@ -22,3 +22,5 @@ Download it [here](https://gif.ski/)
 Run `convert.sh`<br/>
 Args: video (must be in current dir), segment length (in seconds), fps, video width (resolution)<br/>
 Outputs: a lua file with a table of all the spritesheets, with columns, rows, and frames
+
+P.S. If you get the error `tile cannot extend outside image` during the sheet making part, uncomment line 16 and comment line 15 in `convert.sh`, as it is a problem with using gifski.
