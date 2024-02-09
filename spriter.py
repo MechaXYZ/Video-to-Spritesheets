@@ -8,7 +8,7 @@ import argparse
 import rblxopencloud
 from PIL import Image
 
-id = 12345 # put your userid here
+id = 123456 # put your userid here
 key = "foobar123" # put your api key here
 user = rblxopencloud.User(id, api_key=key)
 
@@ -73,6 +73,9 @@ def spriter(mastername):
 
 		count += 1
 
+	if master_width == 0:
+		master_width = len(images) * image_width
+	
 	master_height += image_height
 
 	master = Image.new(
@@ -84,7 +87,7 @@ def spriter(mastername):
 	count = 0
 	offset = 0
 
-	for c, image in enumerate(images):
+	for _, image in enumerate(images):
 		if count * image_width > 1024:
 			count = 0
 			offset += image_height

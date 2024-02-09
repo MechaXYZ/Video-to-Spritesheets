@@ -70,8 +70,8 @@ for segment in glob.glob('*.mp4'):
 	name = Path(segment).stem + '.gif'
 
 	subprocess.run(
-		'ffmpeg -i %s -pix_fmt rgb8 "../gifs/%s"' %
-		(segment, name),
+		'gifski --fps %d --width %d -o "../gifs/%s" %s' %
+		(fps, width, name, segment),
 		shell=True
 	)
 
