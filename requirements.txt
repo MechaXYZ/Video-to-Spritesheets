@@ -1,0 +1,3 @@
+Pillow
+rblx_open_cloud
+Requests

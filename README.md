@@ -2,14 +2,12 @@
 This converts a video to multiple spritesheets, and uploads them all to Roblox.
 
 # Setup
-Open `spriter.py` and set <i>id</i> to your user id, and <i>key</i> to your Roblox API key
-This requires rblx-open-cloud and Pillow to work, install them with this command:
+Install requirements with:
 ```py
-pip3 install rblx-open-cloud Pillow
+pip3 install -r requirements.txt
 ```
 
-It also requires gifski, for high quality gifs
-Download it [here](https://gif.ski/)
+Open `spriter.py` and set <i>id</i> to your user id, and <i>key</i> to your Roblox API key
 
 # How to get an API key
 1. Go to [Creator Hub >> Open Cloud >> API keys](https://create.roblox.com/dashboard/credentials?activeTab=ApiKeysTab)
@@ -19,8 +17,5 @@ Download it [here](https://gif.ski/)
 5. Set your desired expiration, then press Save & Generate Key and copy it
 
 # How to use
-Run `convert.sh`<br/>
-Args: video (must be in current dir), segment length (in seconds), fps, video width (resolution)<br/>
+Run `convert.py`<br/>
 Outputs: a lua file with a table of all the spritesheets, with columns, rows, and frames
-
-P.S. If you get the error `tile cannot extend outside image` during the sheet making part, uncomment line 16 and comment line 15 in `convert.sh`, as it is a problem with using gifski.
