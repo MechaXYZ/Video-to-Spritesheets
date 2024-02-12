@@ -55,25 +55,10 @@ subprocess.run(
 	shell=True
 )
 
-if not Path(base + '/gifs').exists():
-	os.mkdir(base + '/gifs')
-
 if not Path(base + '/frames').exists():
 	os.mkdir(base + '/frames')
 
 if not Path(base + '/sheets').exists():
 	os.mkdir(base + '/sheets')
 
-os.chdir(base + '/segs')
-
-for segment in glob.glob('*.mp4'):
-	name = Path(segment).stem + '.gif'
-
-	subprocess.run(
-		'gifski --fps %d --width %d -o "../gifs/%s" %s' %
-		(fps, width, name, segment),
-		shell=True
-	)
-
-os.chdir('../../../')
 os.system("python spriter.py " + video.stem)

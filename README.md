@@ -7,9 +7,6 @@ Install requirements with:
 pip3 install -r requirements.txt
 ```
 
-This tool also requires gifski, for high quality gifs.
-Download it [here](https://gif.ski)
-
 Open `spriter.py` and set <i>id</i> to your user id, and <i>key</i> to your Roblox API key
 
 # How to get an API key

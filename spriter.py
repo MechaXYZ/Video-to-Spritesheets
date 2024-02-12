@@ -1,5 +1,6 @@
 import re
 import os
+import cv2
 import sys
 import glob
 import time
@@ -35,24 +36,21 @@ def upload(path):
 			if operation:
 				return process(operation.id)
 
-def split(gif):
-	frame = Image.open(gif)
-	frameIdx = 0
+def split(path):
+	video = cv2.VideoCapture(path) 
 	
-	os.chdir('../frames')
-	 
-	try:
-		while 1:
-			frame.seek(frameIdx)
-			frame.save('%s/%s.png' % (os.getcwd(), frameIdx),'png')
-			frameIdx += 1
-	except EOFError:
-		pass
+	count = 0
+	success = 1
+	
+	while success: 
+		success, image = video.read()
 
-def spriter(mastername):
-	if mastername is None:
-		mastername = 'master.png'
+		if success:
+			cv2.imwrite('../frames/%d.png' % (count), image) 
+	
+			count += 1
 
+def spriter(name):
 	iconMap = [fn for fn in glob.glob('*.png') if re.match(r'\d+.png', fn)]
 	iconMap = sorted(iconMap, key=lambda i: int(i.split('.')[0]))
 
@@ -99,15 +97,17 @@ def spriter(mastername):
 
 	
 	os.chdir('../')
-	master.save('sheets/' + mastername)
+	master.save('sheets/' + name)
 
-	print('saved %s' % mastername)
+	print('saved %s' % name)
 
-	return master_width / image_width, master_height / image_height, len(images), mastername
+	return master_width / image_width, master_height / image_height, len(images), name
 
-def gif_to_sprite(gif=None):
-	split(gif)
-	cols, rows, frames, path = spriter(gif.split('.')[0] + '.png')
+def sheetify(vid):
+	split(vid)
+
+	os.chdir('../frames')
+	cols, rows, frames, path = spriter(vid.split('.')[0] + '.png')
 
 	os.chdir('./frames')
 	leftovers = [fn for fn in glob.glob('*.png') if re.match(r'\d+.png', fn)]
@@ -115,17 +115,16 @@ def gif_to_sprite(gif=None):
 	for f in leftovers:
 		os.remove(f)
 	
-	os.chdir('../gifs')
-
+	os.chdir('../segs')
 	return rows, cols, frames, path
 
-os.chdir('out/' + sys.argv[1] + '/gifs')
+os.chdir('out/' + sys.argv[1] + '/segs')
 
 lua = '''local frames = {
 '''
 
-for i in range(len(glob.glob('*.gif'))):
-	rows, cols, frames, path = gif_to_sprite(str(i) + '.gif')
+for i in range(len(glob.glob('*.mp4'))):
+	rows, cols, frames, path = sheetify(str(i) + '.mp4')
 
 	lua += '''    [%d] = {
 		["Rows"] = %d,

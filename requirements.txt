@@ -1,3 +1,4 @@
 Pillow
-rblx_open_cloud
 Requests
+opencv-python
+rblx_open_cloud
