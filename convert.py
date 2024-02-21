@@ -51,7 +51,7 @@ if not Path(base).exists():
 
 subprocess.run(
 	'ffmpeg -i %s -an -reset_timestamps 1 -force_key_frames "expr:gte(t,n_forced*%d)" -r %d -filter:v fps=%d -filter:v scale=%d:-2 -map 0 -segment_time %d -f segment "out/%s/segs/%%d.mp4"' %
-	(args.input, fps, fps, fps, width, time, video.stem),
+	(args.input, time, fps, fps, width, time, video.stem),
 	shell=True
 )
 
