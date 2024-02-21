@@ -5,13 +5,15 @@ import sys
 import glob
 import time
 import requests
-import argparse
 import rblxopencloud
 from PIL import Image
 
-id = 123456 # put your userid here
+id = 1234567 # put your userid here
 key = "foobar123" # put your api key here
 user = rblxopencloud.User(id, api_key=key)
+
+lua = '''local frames = {
+'''
 
 def process(id):
 	result = requests.get("https://assetdelivery.roblox.com/v1/asset/?id=" + str(id)).text
@@ -26,15 +28,29 @@ def upload(path):
 	asset = user.upload_asset(file, rblxopencloud.AssetType.Decal, "sprite", "Decal")
 	time.sleep(1)
 
-	if isinstance(asset, rblxopencloud.Asset):
-		return process(asset.id)
-	else:
-		while True:
-			time.sleep(1)
-			operation = asset.fetch_operation()
+	try:
+		if isinstance(asset, rblxopencloud.Asset):
+			return process(asset.id)
+		else:
+			while True:
+				time.sleep(1)
+				operation = asset.fetch_operation()
 
-			if operation:
-				return process(operation.id)
+				if operation:
+					return process(operation.id)
+	except:
+		print('error occured while uploading, saving to out.lua')
+		
+		os.chdir('../../../')
+
+		try:
+			print('saving to out.lua')
+			f = open('out.lua', 'w+')
+			f.write(lua)
+			print('saved')
+		except:
+			print(lua)
+
 
 def split(path):
 	video = cv2.VideoCapture(path) 
@@ -119,9 +135,6 @@ def sheetify(vid):
 	return rows, cols, frames, path
 
 os.chdir('out/' + sys.argv[1] + '/segs')
-
-lua = '''local frames = {
-'''
 
 for i in range(len(glob.glob('*.mp4'))):
 	rows, cols, frames, path = sheetify(str(i) + '.mp4')
