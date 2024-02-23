@@ -8,7 +8,7 @@ import requests
 import rblxopencloud
 from PIL import Image
 
-id = 1234567 # put your userid here
+id = 12345678 # put your userid here
 key = "foobar123" # put your api key here
 user = rblxopencloud.User(id, api_key=key)
 
@@ -28,29 +28,15 @@ def upload(path):
 	asset = user.upload_asset(file, rblxopencloud.AssetType.Decal, "sprite", "Decal")
 	time.sleep(1)
 
-	try:
-		if isinstance(asset, rblxopencloud.Asset):
-			return process(asset.id)
-		else:
-			while True:
-				time.sleep(1)
-				operation = asset.fetch_operation()
+	if isinstance(asset, rblxopencloud.Asset):
+		return process(asset.id)
+	else:
+		while True:
+			time.sleep(1)
+			operation = asset.fetch_operation()
 
-				if operation:
-					return process(operation.id)
-	except:
-		print('error occured while uploading, saving to out.lua')
-		
-		os.chdir('../../../')
-
-		try:
-			print('saving to out.lua')
-			f = open('out.lua', 'w+')
-			f.write(lua)
-			print('saved')
-		except:
-			print(lua)
-
+			if operation:
+				return process(operation.id)
 
 def split(path):
 	video = cv2.VideoCapture(path) 
@@ -136,27 +122,39 @@ def sheetify(vid):
 
 os.chdir('out/' + sys.argv[1] + '/segs')
 
-for i in range(len(glob.glob('*.mp4'))):
-	rows, cols, frames, path = sheetify(str(i) + '.mp4')
+try:
+	for i in range(len(glob.glob('*.mp4'))):
+		rows, cols, frames, path = sheetify(str(i) + '.mp4')
 
-	lua += '''    [%d] = {
-		["Rows"] = %d,
-		["Columns"] = %d,
-		["Frames"] = %d,
-		["Id"] = %s
-	};
+		lua += '''    [%d] = {
+			["Rows"] = %d,
+			["Columns"] = %d,
+			["Frames"] = %d,
+			["Id"] = %s
+		};
 ''' % (i, rows, cols, frames, upload('../sheets/' + path))
 
-	print('uploaded %s' % path)
+		print('uploaded %s' % path)
 
-lua += '}'
+	lua += '}'
 
-os.chdir('../../../')
+	os.chdir('../../../')
 
-try:
-	print('saving to out.lua')
-	f = open('out.lua', 'w+')
-	f.write(lua)
-	print('saved')
-except:
-	print(lua)
+	try:
+		print('saving to out.lua')
+		f = open('out.lua', 'w+')
+		f.write(lua)
+		print('saved')
+	except:
+		print(lua)
+except Exception as err:
+	print("an error occured while uploading, saving out.lua to " + os.getcwd())
+
+	try:
+		f = open('out.lua', 'w+')
+		f.write(lua)
+		print('saved')
+	except:
+		print(lua)
+
+	print("error: " + str(err))
