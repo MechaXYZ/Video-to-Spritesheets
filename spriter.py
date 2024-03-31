@@ -103,13 +103,13 @@ def spriter(name):
 
 	print('saved %s' % name)
 
-	return master_width / image_width, master_height / image_height, len(images), name
+	return master_width / image_width, master_height / image_height, len(images), name, master_width, master_height
 
 def sheetify(vid):
 	split(vid)
 
 	os.chdir('../frames')
-	cols, rows, frames, path = spriter(vid.split('.')[0] + '.png')
+	cols, rows, frames, path, width, height = spriter(vid.split('.')[0] + '.png')
 
 	os.chdir('./frames')
 	leftovers = [fn for fn in glob.glob('*.png') if re.match(r'\d+.png', fn)]
@@ -118,21 +118,22 @@ def sheetify(vid):
 		os.remove(f)
 	
 	os.chdir('../segs')
-	return rows, cols, frames, path
+	return rows, cols, frames, path, width, height
 
 os.chdir('out/' + sys.argv[1] + '/segs')
 
 try:
 	for i in range(len(glob.glob('*.mp4'))):
-		rows, cols, frames, path = sheetify(str(i) + '.mp4')
+		rows, cols, frames, path, width, height = sheetify(str(i) + '.mp4')
 
 		lua += '''    [%d] = {
-			["Rows"] = %d,
-			["Columns"] = %d,
-			["Frames"] = %d,
-			["Id"] = %s
+			Rows = %d,
+			Columns = %d,
+			Frames = %d,
+			Id = %s,
+			ImageRectSize = Vector2.new(%d, %d)
 		};
-''' % (i, rows, cols, frames, upload('../sheets/' + path))
+''' % (i, rows, cols, frames, upload('../sheets/' + path), width, height)
 
 		print('uploaded %s' % path)
 
