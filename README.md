@@ -7,7 +7,7 @@ Install requirements with:
 pip3 install -r requirements.txt
 ```
 
-Open `.env` and set <i>V2S_UID</i> to your user id, and <i>V2S_KEY</i> to your Roblox API ey
+Open `.env` and set <i>V2S_UID</i> to your user id, and <i>V2S_KEY</i> to your Roblox API key
 
 # Getting an API Key
 1. Go to [Creator Hub >> Open Cloud >> API keys](https://create.roblox.com/dashboard/credentials?activeTab=ApiKeysTab)
