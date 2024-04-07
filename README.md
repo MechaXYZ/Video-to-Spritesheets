@@ -7,9 +7,9 @@ Install requirements with:
 pip3 install -r requirements.txt
 ```
 
-Open `spriter.py` and set <i>id</i> to your user id, and <i>key</i> to your Roblox API key
+Open `.env` and set <i>V2S_UID</i> to your user id, and <i>V2S_KEY</i> to your Roblox API ey
 
-# How to get an API key
+# Getting an API Key
 1. Go to [Creator Hub >> Open Cloud >> API keys](https://create.roblox.com/dashboard/credentials?activeTab=ApiKeysTab)
 2. Click "Create API Key" and put a name
 3. Set Access Permisions to "Assets API", then give it Read and Write operations

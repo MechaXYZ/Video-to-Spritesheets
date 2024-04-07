@@ -7,36 +7,80 @@ import time
 import requests
 import rblxopencloud
 from PIL import Image
+from dotenv import load_dotenv
 
-id = 12345678 # put your userid here
-key = "foobar123" # put your api key here
+load_dotenv()
+
+id = os.getenv("V2S_UID")
+key = os.getenv("V2S_KEY")
+
+if not id:
+	raise LookupError("V2S_UID was not set!")
+elif not key:
+	raise LookupError("V2S_KEY was not set!")
+
+try:
+	id = int(id)
+except ValueError:
+	raise ValueError("V2S_UID must be a number!")
+
 user = rblxopencloud.User(id, api_key=key)
 
 lua = '''local frames = {
 '''
 
 def process(id):
-	result = requests.get("https://assetdelivery.roblox.com/v1/asset/?id=" + str(id)).text
-	time.sleep(1)
-	id = re.search('<url>(.*)</url', result).group(1)
+	try:
+		result = requests.get("https://assetdelivery.roblox.com/v1/asset/?id=" + str(id)).text
+		time.sleep(1)
+		id = re.search('<url>(.*)</url', result).group(1)
 
-	return id[32:]
+		return id[32:]
+	except (Exception, KeyboardInterrupt) as err:
+		print("an error occured while getting image id, saving out.lua to " + os.getcwd())
+		os.chdir('../../../')
+
+		try:
+			f = open('out.lua', 'w')
+			f.write(lua)
+			print('saved')
+		except:
+			print(lua)
+		finally:
+			os._exit(130)
+
+		print("error: " + str(err))
 
 def upload(path):
 	file = open(path, "rb")
 
-	asset = user.upload_asset(file, rblxopencloud.AssetType.Decal, "sprite", "Decal")
-	time.sleep(1)
+	try:
+		asset = user.upload_asset(file, rblxopencloud.AssetType.Decal, "sprite", "Decal")
+		time.sleep(1)
 
-	if isinstance(asset, rblxopencloud.Asset):
-		return process(asset.id)
-	else:
-		while True:
-			time.sleep(1)
-			operation = asset.fetch_operation()
+		if isinstance(asset, rblxopencloud.Asset):
+			return process(asset.id)
+		else:
+			while True:
+				time.sleep(1)
+				operation = asset.fetch_operation()
 
-			if operation:
-				return process(operation.id)
+				if operation:
+					return process(operation.id)
+	except (Exception, KeyboardInterrupt) as err:
+		print("an error occured while uploading, saving out.lua to " + os.getcwd())
+		os.chdir('../../../')
+		
+		try:
+			f = open('out.lua', 'w')
+			f.write(lua)
+			print('saved')
+		except:
+			print(lua)
+		finally:
+			os._exit(130)
+
+		print("error: " + str(err))
 
 def split(path):
 	video = cv2.VideoCapture(path) 
@@ -143,19 +187,23 @@ try:
 
 	try:
 		print('saving to out.lua')
-		f = open('out.lua', 'w+')
+		f = open('out.lua', 'w')
 		f.write(lua)
 		print('saved')
 	except:
 		print(lua)
-except Exception as err:
+except (Exception, KeyboardInterrupt) as err:
 	print("an error occured while uploading, saving out.lua to " + os.getcwd())
-
+	os.chdir('../../../')
+	
 	try:
-		f = open('out.lua', 'w+')
+		f = open('out.lua', 'w')
 		f.write(lua)
+		f.close()
 		print('saved')
 	except:
 		print(lua)
+	finally:
+		os._exit(130)
 
 	print("error: " + str(err))
