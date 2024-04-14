@@ -7,6 +7,8 @@ import time
 import requests
 import rblxopencloud
 from PIL import Image
+from io import BytesIO
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -29,27 +31,35 @@ user = rblxopencloud.User(id, api_key=key)
 lua = '''local frames = {
 '''
 
+def get_size(url):
+	req = requests.get(url)
+	img = Image.open(BytesIO(req.content))
+	return img.size
+
 def process(id):
 	try:
 		result = requests.get("https://assetdelivery.roblox.com/v1/asset/?id=" + str(id)).text
 		time.sleep(1)
-		id = re.search('<url>(.*)</url', result).group(1)
+		
+		id = int(re.search('<url>(.*)</url', result).group(1)[32:])
+		width, height = get_size("https://assetdelivery.roblox.com/v1/asset/?id=" + str(id))
+		time.sleep(1)
 
-		return id[32:]
+		return id, width, height
 	except (Exception, KeyboardInterrupt) as err:
-		print("an error occured while getting image id, saving out.lua to " + os.getcwd())
 		os.chdir('../../../')
+		print("an error occured while getting image id, saving out.lua to " + os.getcwd())
 
 		try:
-			f = open('out.lua', 'w')
-			f.write(lua)
+			with open('out.lua', 'w+') as f:
+				f.write(lua)
+
 			print('saved')
 		except:
 			print(lua)
 		finally:
+			print("error: " + str(err))
 			os._exit(130)
-
-		print("error: " + str(err))
 
 def upload(path):
 	file = open(path, "rb")
@@ -68,19 +78,19 @@ def upload(path):
 				if operation:
 					return process(operation.id)
 	except (Exception, KeyboardInterrupt) as err:
-		print("an error occured while uploading, saving out.lua to " + os.getcwd())
 		os.chdir('../../../')
+		print("an error occured while uploading, saving out.lua to " + os.getcwd())
 		
 		try:
-			f = open('out.lua', 'w')
-			f.write(lua)
+			with open('out.lua', 'w+') as f:
+				f.write(lua)
+			
 			print('saved')
 		except:
 			print(lua)
 		finally:
+			print("error: " + str(err))
 			os._exit(130)
-
-		print("error: " + str(err))
 
 def split(path):
 	video = cv2.VideoCapture(path) 
@@ -147,13 +157,13 @@ def spriter(name):
 
 	print('saved %s' % name)
 
-	return master_width / image_width, master_height / image_height, len(images), name, master_width, master_height
+	return master_width / image_width, master_height / image_height, len(images), name
 
 def sheetify(vid):
 	split(vid)
 
 	os.chdir('../frames')
-	cols, rows, frames, path, width, height = spriter(vid.split('.')[0] + '.png')
+	cols, rows, frames, path = spriter(vid.split('.')[0] + '.png')
 
 	os.chdir('./frames')
 	leftovers = [fn for fn in glob.glob('*.png') if re.match(r'\d+.png', fn)]
@@ -162,22 +172,23 @@ def sheetify(vid):
 		os.remove(f)
 	
 	os.chdir('../segs')
-	return rows, cols, frames, path, width, height
+	return rows, cols, frames, path
 
 os.chdir('out/' + sys.argv[1] + '/segs')
 
 try:
 	for i in range(len(glob.glob('*.mp4'))):
-		rows, cols, frames, path, width, height = sheetify(str(i) + '.mp4')
+		rows, cols, frames, path = sheetify(str(i) + '.mp4')
+		id, width, height = upload('../sheets/' + path)
 
 		lua += '''    [%d] = {
-			Rows = %d,
-			Columns = %d,
-			Frames = %d,
-			Id = %s,
-			ImageRectSize = Vector2.new(%d, %d)
-		};
-''' % (i, rows, cols, frames, upload('../sheets/' + path), width, height)
+		Rows = %d,
+		Columns = %d,
+		Frames = %d,
+		Id = %s,
+		ImageRectSize = Vector2.new(%d, %d)
+	};
+''' % (i, rows, cols, frames, id, width, height)
 
 		print('uploaded %s' % path)
 
@@ -187,23 +198,24 @@ try:
 
 	try:
 		print('saving to out.lua')
-		f = open('out.lua', 'w')
-		f.write(lua)
+
+		with open('out.lua', 'w+') as f:
+			f.write(lua)
+		
 		print('saved')
 	except:
 		print(lua)
 except (Exception, KeyboardInterrupt) as err:
-	print("an error occured while uploading, saving out.lua to " + os.getcwd())
 	os.chdir('../../../')
+	print("an error occured while uploading, saving out.lua to " + os.getcwd())
 	
 	try:
-		f = open('out.lua', 'w')
-		f.write(lua)
-		f.close()
+		with open('out.lua', 'w+') as f:
+			f.write(lua)
+		
 		print('saved')
 	except:
 		print(lua)
 	finally:
+		print("error: " + str(err))
 		os._exit(130)
-
-	print("error: " + str(err))
