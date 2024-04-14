@@ -8,7 +8,6 @@ import requests
 import rblxopencloud
 from PIL import Image
 from io import BytesIO
-
 from dotenv import load_dotenv
 
 load_dotenv()
