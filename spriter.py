@@ -51,7 +51,7 @@ def process(id):
 		return id, width, height
 	except (Exception, KeyboardInterrupt) as err:
 		os.chdir('../../../')
-		print("an error occured while getting image id, saving out.lua to " + os.getcwd())
+		print("an error occured while getting image id / size, saving out.lua to " + os.getcwd())
 
 		try:
 			with open('out.lua', 'w+') as f:
