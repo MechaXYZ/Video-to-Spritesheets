@@ -32,8 +32,12 @@ lua = '''local frames = {
 
 def get_size(url):
 	req = requests.get(url)
+
+	if re.search("approved", req.text):
+		raise ValueError("image was automatically declined: %s" % req.text)
+
 	img = Image.open(BytesIO(req.content))
-	return img.size
+	return img.sie
 
 def process(id):
 	try:
