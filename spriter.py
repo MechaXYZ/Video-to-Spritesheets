@@ -45,10 +45,10 @@ def process(id):
 		time.sleep(1)
 		
 		id = int(re.search('<url>(.*)</url', result).group(1)[32:])
-		width, height = get_size("https://assetdelivery.roblox.com/v1/asset/?id=" + str(id))
+		# width, height = get_size("https://assetdelivery.roblox.com/v1/asset/?id=" + str(id))
 		time.sleep(1)
 
-		return id, width, height
+		return id #, width, height
 	except (Exception, KeyboardInterrupt) as err:
 		os.chdir('../../../')
 		print("an error occured while getting image id / size, saving out.lua to " + os.getcwd())
@@ -182,16 +182,15 @@ os.chdir('out/' + sys.argv[1] + '/segs')
 try:
 	for i in range(len(glob.glob('*.mp4'))):
 		rows, cols, frames, path = sheetify(str(i) + '.mp4')
-		id, width, height = upload('../sheets/' + path)
+		id = upload('../sheets/' + path)
 
 		lua += '''    [%d] = {
 		Rows = %d,
 		Columns = %d,
 		Frames = %d,
-		Id = %s,
-		ImageRectSize = Vector2.new(%d, %d)
+		Id = %s
 	};
-''' % (i, rows, cols, frames, id, width, height)
+''' % (i, rows, cols, frames, id)
 
 		print('uploaded %s' % path)
 
